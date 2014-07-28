@@ -7,17 +7,8 @@
 	var msgHandlers = {
 		page_init: function(data, tab, sendResponse) {
 			var tabId = tab.id;
-			if(data.showIcon) {
-				chrome.pageAction.setIcon({
-					path: 'images/icon_32.png',
-					tabId: tabId
-				});
 
-				chrome.pageAction.show(tabId);
-			}
-			else {
-				chrome.pageAction.hide(tabId);
-			}
+			chrome.pageAction[data.showIcon ? 'show' : 'hide'](tabId);
 		}
 	};
 
