@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chrome-Lessjs test</title>
+    <link rel="stylesheet/less" href="style.less">
+    <style type="text/less">
+    h1{ font-size: 1.96em;}
+    </style>
+    <!-- Lesscss -->
+    <script>
+        var less = {
+            //logLevel: 0,
+            //sourceMap: false,
+            env: "development", // 或者"production"
+            async: true,       // 异步加载导入的文件
+            //poll: 1000,         // 在监视模式下，每两次请求之间的时间间隔（ms）
+            //dumpLineNumbers: "all", // 或者"mediaQuery"，或者"all"
+            relativeUrls: false, // 是否调整相对路径
+            globalVars: {
+                //base: 'green'
+            }
+        };
+    </script>
+    <!-- <script src="http://libcdn.huanleguang.com/js_lib/lessjs-1.5.0/less.js"></script> -->
+</head>
+<body>
+    <h1>This is a test page</h1>
+    <h2 class="box">功能简介</h2>
+    <p class="desc">在 Chrome 下实现类似 FireLESS 功能 <a href="https://github.com/laoshu133/chrome-lessjs">GitHub</a></p>
+</body>
+</html>
