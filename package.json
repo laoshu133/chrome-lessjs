@@ -1,0 +1,16 @@
+{
+  "name": "chrome-lessjs",
+  "description": "A Chrome plugin for less compile, like FireLESS",
+  "version": "0.0.1",
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laoshu133/chrome-lessjs.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.5.0"
+  },
+  "readmeFilename": "README.md"
+}
