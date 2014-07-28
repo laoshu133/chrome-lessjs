@@ -1,3 +1,7 @@
+// wraps the source-map code in a less module
+(function() {
+
+
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -1931,3 +1935,7 @@ this.sourceMap = {
   SourceMapGenerator: require('source-map/source-map-generator').SourceMapGenerator,
   SourceNode: require('source-map/source-node').SourceNode
 };
+
+
+// footer to wrap "source-map" module
+})();
