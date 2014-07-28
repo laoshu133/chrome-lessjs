@@ -35,12 +35,12 @@
 
     if(links.length > 0) {
         injectLessDetect();
-    }
 
-    chrome.runtime.sendMessage({
-        type: 'page_init',
-        showIcon: !!links.length
-    });
+        chrome.runtime.sendMessage({
+            type: 'page_init',
+            showIcon: !!links.length
+        });
+    }
 
     function injectLessDetect() {
         var script = document.createElement('script');
