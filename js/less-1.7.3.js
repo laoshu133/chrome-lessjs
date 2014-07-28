@@ -7935,7 +7935,6 @@ less.Parser.fileLoader = loadFile;
 // 取消默认加载完开始编译
 //less.refresh(less.env === 'development');
 
-// 覆写 refresh，保存上一次
 
 // amd.js
 //
