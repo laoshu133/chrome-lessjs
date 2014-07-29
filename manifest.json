@@ -14,7 +14,7 @@
 	},
 	"permissions": [ "tabs", "*://*/*" ],
 	"background": {
-		// "persistent": false,
+		"persistent": false,
 		"scripts": ["js/background.js"]
 	},
 	"content_scripts": [{
