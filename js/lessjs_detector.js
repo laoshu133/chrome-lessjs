@@ -67,12 +67,12 @@
         var id = 'less:' + (sheet.title || extractId(href));
 
         // use link replace style
-        var link = document.getElementById(id);
+        var oldStyle, link = document.getElementById(id);
         var url = 'data:text/css;charset=utf-8;base64,';
         url += base64Encode(content);
 
         if(link && link.nodeName !== 'link') {
-            document.head.removeChild(link);
+            oldStyle = link;
             link = null;
         }
 
@@ -82,6 +82,13 @@
             link.type = 'css/text';
             link.href = url;
             link.id = id;
+
+            if(oldStyle) {
+                // 防止 FOUC
+                link.onload = function() {
+                    document.head.removeChild(oldStyle);
+                };
+            }
 
             document.head.appendChild(link);
         }
