@@ -13,8 +13,7 @@
 ## 用法
 
 1. 开启插件即可，无需设置
-2. 建议在 Chrome 下不引用 `less.js`，插件检测到页面包含 `less` 样式时会自动调用插件内的 `lessjs` 进行解析
-3. 建议将 `less.async` 设为 `true`
+2. 建议将 `less.async` 设为 `true`
 
 ## 实现原理
 
