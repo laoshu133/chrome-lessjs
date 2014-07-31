@@ -4,6 +4,7 @@
 
 1. 解析页面中 LESS css
 2. 在 Chrome Developer Tools 中显示行号
+3. 支持开关 `source-map`
 
 在 Chrome 下实现类似 FireLESS 功能，引入 FireLESS 原简介：
 
@@ -25,12 +26,12 @@
 
 1. 在插件初始化之前调用的 `less.modifyVars` 会无效，且无法保存状态
 
-	建议尽可能的不要使用 `less.modifyVars`，使用 `globalVars` 或者 `less.postProcessor` 代替，这样也可以减少一次或多次 http 请求；目前直接引用 less.js，且 `less.async` 参数为 `true` 也会有这个问题
+	建议尽可能的不要使用 `less.modifyVars`，使用 `globalVars` 或者 `less.postProcessor` 代替，且这样也可以减少一次或多次 http 请求；目前直接引用 less.js，且 `less.async` 参数为 `true` 也会有这个问题
 	
 ## 为什么会有这个插件？ 谁会用？
 
-1. 某些不喜欢 Grunt watch 或者 其他编译 less 工具的童鞋
-2. 某些基于线上协同开发的童鞋
+1. 某些基于线上协同开发的童鞋
+2. 某些不喜欢 Grunt watch 或者 其他编译 less 工具的童鞋
 3. ...
 
 
