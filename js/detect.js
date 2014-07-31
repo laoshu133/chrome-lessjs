@@ -48,6 +48,6 @@
         script.id = detcetorId;
         script.async = true;
 
-        document.body.appendChild(script);
+        document.head.appendChild(script);
     }
 })(this, document);
