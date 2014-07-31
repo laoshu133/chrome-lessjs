@@ -71,7 +71,7 @@
         var url = 'data:text/css;charset=utf-8;base64,';
         url += base64Encode(content);
 
-        if(link && link.nodeName !== 'link') {
+        if(link && link.nodeName.toUpperCase() !== 'LINK') {
             oldStyle = link;
             link = null;
         }
@@ -86,7 +86,11 @@
             if(oldStyle) {
                 // 防止 FOUC
                 link.onload = function() {
-                    document.head.removeChild(oldStyle);
+                    link.onload = null;
+
+                    if(oldStyle.parentNode) {
+                        oldStyle.parentNode.removeChild(oldStyle);
+                    }
                 };
             }
 
