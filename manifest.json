@@ -1,15 +1,16 @@
 {
 	"manifest_version": 2,
-	"version": "0.0.1",
-	"name": "Chrome Lessjs",
-	"description": "A Chrome plugin for less compile, like FireLESS",
+	"version": "0.0.2",
+	"name": "Lessjs for Google Chrome",
+	"description": "A Lesscss compiler for Google Chrome, like FireLESS",
 	"icons": {
+		"32": "images/icon_32.png",
 		"48": "images/icon_48.png",
 		"128": "images/logo.png"
 	},
 	"page_action": {
 		"default_icon": "images/icon_32.png",
-		"default_title": "Chrome Lessjs",
+		"default_title": "Lessjs for Google Chrome",
 		"default_popup": "popup.html"
 	},
 	"permissions": [ "tabs", "*://*/*" ],
@@ -23,5 +24,5 @@
 		"run_at": "document_end",
 		"all_frames": true
 	}],
-	"web_accessible_resources": [ "js/lessjs_detector.js", "js/less.min.js", "js/less-1.7.3.js", "js/source-map.min.js" ]
+	"web_accessible_resources": [ "js/lessjs_detector.js", "js/less.min.js", "js/source-map.min.js" ]
 }

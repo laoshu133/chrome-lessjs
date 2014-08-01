@@ -1,8 +1,8 @@
-# Chrome插件 - Lessjs
+# Lessjs for Google Chrome
 
 ## 功能简介
 
-1. 解析页面中 LESS css
+1. 编译页面中 LessCSS
 2. 在 Chrome Developer Tools 中显示行号
 3. 支持开关 `source-map`
 
@@ -14,7 +14,7 @@
 ## 用法
 
 1. 开启插件即可，无需设置
-2. 建议将 `less.async` 设为 `true`
+2. <del>建议将 `less.async` 设为 `true`</del>
 
 ## 实现原理
 
@@ -38,3 +38,5 @@
 ## 版本历史
 
 `0.0.1` 功能实现
+
+`0.0.2` 改名，兼容谷歌条例
