@@ -13,11 +13,15 @@
         },
         get_sourcemap_status: function(data, sender, callback) {
             var detcetorElem = document.getElementById(detcetorId);
-            var sourceMapEnabled = detcetorElem && detcetorElem.getAttribute('data-sourcemap') === '1';
+
+            var sourceMapEnabled = true;
+            if(detcetorElem && detcetorElem.getAttribute('data-sourcemap') === '0') {
+                sourceMapEnabled = false;
+            }
 
             callback({
                 type: 'ret_sourcemap_status',
-                enabled: !!sourceMapEnabled
+                enabled: sourceMapEnabled
             });
         }
     };
