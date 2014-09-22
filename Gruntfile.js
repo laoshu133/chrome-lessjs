@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 			dev: {
 				files: {
 					'js/less.min.js': ['js/less-*.js'],
-					'js/source-map.min.js': ['js/source-map-0.1.31.js']
+					'js/source-map.min.js': ['js/source-map-*.js']
 				}
 			}
 		}
