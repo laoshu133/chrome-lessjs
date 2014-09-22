@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"name": "Lessjs for Google Chrome",
 	"description": "A Lesscss compiler for Google Chrome, like FireLESS",
 	"icons": {
@@ -24,5 +24,6 @@
 		"run_at": "document_end",
 		"all_frames": true
 	}],
-	"web_accessible_resources": [ "js/lessjs_detector.js", "js/less.min.js", "js/source-map.min.js" ]
+	"web_accessible_resources": [ "js/lessjs_detector.js", "js/less.min.js", "js/source-map.min.js" ],
+	"devtools_page": "devtools.html"
 }

@@ -9,6 +9,15 @@
 			var tabId = tab.id;
 
 			chrome.pageAction[data.showIcon ? 'show' : 'hide'](tabId);
+		},
+		devtools_open: function() {
+			sendMesaageToTab({
+	            type: 'sourcemap_change',
+	            enabled: true
+	        });
+		},
+		devtools_close: function() {
+			// console.log('devtools_close');
 		}
 	};
 
@@ -24,4 +33,11 @@
 			msgHandlers[data.type].call(this, data, sender.tab, sendResponse);
 		}
 	});
+
+	// sendMesaageToTab
+    function sendMesaageToTab(data, callback) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, data, callback);
+        });
+    }
 })();
