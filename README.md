@@ -27,7 +27,7 @@
 1. 在插件初始化之前调用的 `less.modifyVars` 会无效，且无法保存状态
 
 	建议尽可能的不要使用 `less.modifyVars`，使用 `globalVars` 或者 `less.postProcessor` 代替，且这样也可以减少一次或多次 http 请求；目前直接引用 less.js，且 `less.async` 参数为 `true` 也会有这个问题
-	
+
 ## 为什么会有这个插件？ 谁会用？
 
 1. 某些基于线上协同开发的童鞋
@@ -40,3 +40,7 @@
 `0.0.1` 功能实现
 
 `0.0.2` 改名，兼容谷歌条例
+
+`0.0.3` 更新 Less, SourceMap 版本；修正与 requirejs 冲突
+
+`0.0.4` devtools 打开时主动启用 SourceMap
