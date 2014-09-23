@@ -11,10 +11,10 @@
 			chrome.pageAction[data.showIcon ? 'show' : 'hide'](tabId);
 		},
 		devtools_open: function() {
-			sendMesaageToTab({
+			/* sendMesaageToTab({
 	            type: 'sourcemap_change',
 	            enabled: true
-	        });
+	        }); */
 		},
 		devtools_close: function() {
 			// console.log('devtools_close');

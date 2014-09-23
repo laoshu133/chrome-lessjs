@@ -54,7 +54,7 @@
 
         less.sourceMapGenerator = sourceMap.SourceMapGenerator;
 
-        setLessSourceMapEnable(!!less.sourceMap);
+        setLessSourceMapEnable(less.sourceMap !== false);
 
         less.refresh(less.env === 'development');
     }

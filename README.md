@@ -44,3 +44,5 @@
 `0.0.3` 更新 Less, SourceMap 版本；修正与 requirejs 冲突
 
 `0.0.4` devtools 打开时主动启用 SourceMap
+
+`0.0.5` 取消 devtools 打开时主动启用 SourceMap，默认开启
