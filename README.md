@@ -46,3 +46,7 @@
 `0.0.4` devtools 打开时主动启用 SourceMap
 
 `0.0.5` 取消 devtools 打开时主动启用 SourceMap，默认开启
+
+`0.0.6` 重构目录结构，优化细节
+
+

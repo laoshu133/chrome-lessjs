@@ -8,20 +8,20 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
 		jshint: {
-			all: [ 'Gruntfile.js', 'js/*.js', '!js/less-*.js', '!js/source-map-*.js', '!js/*.min.js' ]
+			all: [ 'Gruntfile.js', 'js/*.js', '!js/*.min.js' ]
 		},
 		concat: {
 			dev: {
 				files: {
-					'js/source-map.min.js': ['js/source-map-header.js', 'js/source-map-*.js', 'js/source-map-footer.js']
+					'lib/source-map.min.js': ['lib/source-map-header.js', 'lib/source-map-*.js', 'lib/source-map-footer.js']
 				}
 			}
 		},
 		uglify: {
 			dev: {
 				files: {
-					'js/less.min.js': ['js/less-*.js'],
-					'js/source-map.min.js': ['js/source-map.min.js']
+					'lib/less.min.js': ['lib/less-*.js'],
+					'lib/source-map.min.js': ['lib/source-map.min.js']
 				}
 			}
 		}

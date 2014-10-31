@@ -19,11 +19,11 @@
 		"scripts": ["js/background.js"]
 	},
 	"content_scripts": [{
-		"js": [ "js/detect.js" ],
+		"js": [ "js/detector.js" ],
 		"matches": [ "http://*/*", "https://*/*" ],
 		"run_at": "document_end",
 		"all_frames": true
 	}],
-	"web_accessible_resources": [ "js/lessjs_detector.js", "js/less.min.js", "js/source-map.min.js" ],
+	"web_accessible_resources": [ "js/lessjs-injecter.js", "lib/less.min.js", "lib/source-map.min.js" ],
 	"devtools_page": "devtools.html"
 }

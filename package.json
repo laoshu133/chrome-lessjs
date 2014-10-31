@@ -1,7 +1,7 @@
 {
   "name": "chrome-lessjs",
   "description": "A Lesscss compiler for Google Chrome, like FireLESS",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "Gruntfile.js",
   "repository": {
     "type": "git",
