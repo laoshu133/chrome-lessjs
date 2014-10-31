@@ -48,7 +48,7 @@
 
     function injectLessDetect() {
         var script = document.createElement('script');
-        script.src = chrome.extension.getURL('js/lessjs_detector.js');
+        script.src = chrome.extension.getURL('js/lessjs-injecter.js');
         script.id = detcetorId;
         script.async = true;
 

@@ -10,12 +10,12 @@
         return;
     }
 
-    var baseUrl = detectorElem.src.slice(0, detectorElem.src.lastIndexOf('/') + 1);
+    var baseUrl = detectorElem.src.replace('js/lessjs-injecter.js', '');
 
-    injectJs(baseUrl + 'less.min.js', injectSourceMap);
+    injectJs(baseUrl + 'lib/less.min.js', injectSourceMap);
 
     function injectSourceMap() {
-        injectJs(baseUrl + 'source-map.min.js', overrideLess);
+        injectJs(baseUrl + 'lib/source-map.min.js', overrideLess);
     }
 
     function overrideLess() {
