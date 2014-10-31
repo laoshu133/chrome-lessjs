@@ -13,6 +13,7 @@ module.exports = function(grunt) {
 		concat: {
 			dev: {
 				files: {
+					'lib/less.min.js': ['lib/less-*.js'],
 					'lib/source-map.min.js': ['lib/source-map-header.js', 'lib/source-map-*.js', 'lib/source-map-footer.js']
 				}
 			}
@@ -20,7 +21,7 @@ module.exports = function(grunt) {
 		uglify: {
 			dev: {
 				files: {
-					'lib/less.min.js': ['lib/less-*.js'],
+					'lib/less.min.js': ['lib/less.min.js'],
 					'lib/source-map.min.js': ['lib/source-map.min.js']
 				}
 			}
@@ -34,5 +35,5 @@ module.exports = function(grunt) {
 
 	// 声明别名
 	grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
-	grunt.registerTask('dev', ['default']);
+	grunt.registerTask('dev', ['jshint', 'concat']);
 };
