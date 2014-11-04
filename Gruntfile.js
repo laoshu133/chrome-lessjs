@@ -11,18 +11,24 @@ module.exports = function(grunt) {
 			all: [ 'Gruntfile.js', 'js/*.js', '!js/*.min.js' ]
 		},
 		concat: {
-			dev: {
+			all: {
 				files: {
-					'lib/less.min.js': ['lib/less-*.js'],
-					'lib/source-map.min.js': ['lib/source-map-header.js', 'lib/source-map-*.js', 'lib/source-map-footer.js']
+					//'lib/source-map.min.js': ['lib/source-map-header.js', 'lib/source-map-*.js', 'lib/source-map-footer.js'],
+					//'lib/less.min.js': ['lib/less-*.js']
+					'lib/less.min.js': [
+						'lib/less-*.js',
+						'lib/source-map-header.js',
+						'lib/source-map-*.js',
+						'lib/source-map-footer.js'
+					]
 				}
 			}
 		},
 		uglify: {
-			dev: {
+			all: {
 				files: {
-					'lib/less.min.js': ['lib/less.min.js'],
-					'lib/source-map.min.js': ['lib/source-map.min.js']
+					//'lib/source-map.min.js': ['lib/source-map.min.js'],
+					'lib/less.min.js': ['lib/less.min.js']
 				}
 			}
 		}

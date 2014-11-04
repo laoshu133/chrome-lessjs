@@ -15,7 +15,8 @@
     injectJs(baseUrl + 'lib/less.min.js', injectSourceMap);
 
     function injectSourceMap() {
-        injectJs(baseUrl + 'lib/source-map.min.js', overrideLess);
+        //injectJs(baseUrl + 'lib/source-map.min.js', overrideLess);
+        overrideLess();
     }
 
     function overrideLess() {
