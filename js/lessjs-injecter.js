@@ -3,24 +3,242 @@
  */
 
 (function(global, document) {
-    // Chrome 29+, FF4+，待效验
-    var detectorElem = document.currentScript;
-
+    var detectorElem = document.currentScript; // Chrome 29+, FF4+，待效验
     if(!detectorElem) {
         return;
     }
 
+    // ds, follow js/ds.js
+    var ds = {
+        noop: function() {},
+        mix: function(target, source, cover) {
+            if(typeof source !== 'object') {
+                cover = source;
+                source = target;
+                target = this;
+            }
+
+            for(var k in source) {
+                if(cover || target[k] === undefined) {
+                    target[k] = source[k];
+                }
+            }
+            return target;
+        }
+    };
+
+    // Event
+    ds.mix((function() {
+        var _id = 0;
+        function uuid() {
+            return ++_id;
+        }
+
+        var key = parseInt(+new Date() * Math.random());
+
+        function Event(type, props) {
+            var e = {
+                id: uuid(),
+                type: type,
+                key: key
+            };
+
+            return ds.mix(e, props || {});
+        }
+
+        return {
+            uuid: uuid,
+            Event: Event,
+            EVENTKEY: key
+        };
+    }()));
+
+    // Messager
+    ds.Messager = (function() {
+        var msgListeners = {};
+        var msgCallbacks = {};
+
+        function createPostEvent(type, data, callback) {
+            if(typeof data === 'function') {
+                callback = data;
+                data = void 0;
+            }
+
+            var evt = ds.Event(type, {
+                data: data
+            });
+
+            if(typeof callback === 'function') {
+                msgCallbacks[evt.id] = callback;
+            }
+
+            return evt;
+        }
+
+        function handleEvent(e) {
+            var type = e.type;
+            var listeners = msgListeners[type];
+            if(listeners && listeners.length) {
+                for(var i=0,len=listeners.length; i<len; i++) {
+                    listeners[i](e);
+                }
+            }
+
+            var sourceId = e.sourceId;
+            if(sourceId && msgCallbacks[sourceId]) {
+                msgCallbacks[sourceId](e);
+
+                delete msgCallbacks[sourceId];
+            }
+        }
+
+        // for page
+        global.addEventListener('message', function(e) {
+            e = e.data;
+            if(!e || !e.type || !e.key || e.key === ds.EVENTKEY) {
+                return;
+            }
+            e.callback = function(data, evtProps) {
+                var evt = ds.Event('callback', ds.mix({
+                    sourceId: e.id,
+                    data: data
+                }, evtProps || {}));
+
+                global.postMessage(evt, '*');
+            };
+
+            handleEvent(e);
+        });
+
+        return {
+            addListener: function(type, callback) {
+                var listeners = msgListeners[type];
+                if(!listeners) {
+                    listeners = msgListeners[type] = [];
+                }
+
+                if(typeof callback === 'function') {
+                    listeners.push(callback);
+                }
+
+                return this;
+            },
+            post: function(/* type, data, callback */) {
+                var evt = createPostEvent.apply(null, arguments);
+                global.postMessage(evt, '*');
+
+                return this;
+            }
+        };
+    })();
+
+    // tools
+    ds.mix({
+        // message
+        postMessage: function() {
+            var Messager = ds.Messager;
+            Messager.post.apply(Messager, arguments);
+        },
+        // xhr
+        get: function(url, callback) {
+            ds.postMessage('get', url, function(e) {
+                callback(e.data);
+            });
+        },
+        // string
+        base64Encode: function(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        },
+        // dom
+        injectJs: function(url, callback) {
+            var script = document.createElement('script');
+            script.onload = callback;
+            script.async = true;
+            script.src = url;
+
+            document.head.appendChild(script);
+        }
+    });
+
+    // sourceMap toggle
+    ds.Messager.addListener('sourcemap_enable', function(e) {
+        global.less.toggleSourceMap(true);
+    })
+    .addListener('sourcemap_disable', function(e) {
+        global.less.toggleSourceMap(false);
+    });
+
+
+    // Injecter
     var baseUrl = detectorElem.src.replace('js/lessjs-injecter.js', '');
-
-    injectJs(baseUrl + 'lib/less.min.js', injectSourceMap);
-
-    function injectSourceMap() {
-        //injectJs(baseUrl + 'lib/source-map.min.js', overrideLess);
-        overrideLess();
-    }
+    ds.injectJs(baseUrl + 'lib/less.min.js', overrideLess);
 
     function overrideLess() {
-        var less = global.less, sourceMap = global.sourceMap;
+        var less = global.less;
+
+        less.doXHR = function(url, type, callback, errback) {
+            ds.get(url, function(e) {
+                if(e.status === 'success') {
+                    callback(e.data);
+                }
+                else if(errback) {
+                    errback(e.statusCode, url);
+                }
+            });
+        };
+
+        less.createCSS = function(content, sheet) {
+            var href = sheet.href || '';
+            var id = 'less:' + (sheet.title || less.extractId(href));
+
+            // use link replace style
+            var oldStyle;
+            var inited = true;
+            var link = document.getElementById(id);
+
+            if(link && link.nodeName.toUpperCase() !== 'LINK') {
+                oldStyle = link;
+                link = null;
+            }
+
+            if(!link) {
+                inited = false;
+                link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.type = 'css/text';
+                link.id = id;
+            }
+
+            var url = 'data:text/css;charset=utf-8;base64,';
+            url += ds.base64Encode(content);
+            link.href = url;
+
+            if(oldStyle) {
+                // hold FOUC
+                link.onload = function() {
+                    link.onload = null;
+
+                    if(oldStyle.parentNode) {
+                        oldStyle.parentNode.removeChild(oldStyle);
+                    }
+                };
+            }
+
+            if(!inited) {
+                document.head.appendChild(link);
+            }
+        };
+
+        // sourceMap
+        less.toggleSourceMap = function(enabled, notCache) {
+            var key = 'sourcemap';
+
+            detectorElem.setAttribute(key, enabled ? 1 : 0);
+            less.sourceMap = !!enabled;
+            less.refresh(notCache);
+        };
+
+        less.sourceMapGenerator = global.sourceMap.SourceMapGenerator;
 
         // override less.tree
         less.tree.sourceMapOutput.prototype.toCSS = function(env) {
@@ -44,107 +262,15 @@
             this._rootNode.genCSS(env, this);
 
             var sourceMapContent = JSON.stringify(this._sourceMapGenerator.toJSON());
-            var mapData = 'data:application/json;base64,' + base64Encode(sourceMapContent);
+            var mapData = 'data:application/json;base64,' + ds.base64Encode(sourceMapContent);
 
             this._css.push('/*# sourceMappingURL=' + mapData + ' */');
 
             return this._css.join('');
         };
 
-        less.createCSS = injectCss;
-
-        less.sourceMapGenerator = sourceMap.SourceMapGenerator;
-
-        setLessSourceMapEnable(less.sourceMap !== false);
-
-        less.refresh(less.env === 'development');
+        var notCache = less.env === 'development';
+        var sourceMapEnabled = less.sourceMap !== false;
+        less.toggleSourceMap(sourceMapEnabled, notCache);
     }
-
-    function injectCss(content, sheet) {
-        // Strip the query-string
-        var href = sheet.href || '';
-
-        // If there is no title set, use the filename, minus the extension
-        var id = 'less:' + (sheet.title || extractId(href));
-
-        // use link replace style
-        var oldStyle, link = document.getElementById(id);
-        var url = 'data:text/css;charset=utf-8;base64,';
-        url += base64Encode(content);
-
-        if(link && link.nodeName.toUpperCase() !== 'LINK') {
-            oldStyle = link;
-            link = null;
-        }
-
-        if(!link) {
-            link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'css/text';
-            link.href = url;
-            link.id = id;
-
-            if(oldStyle) {
-                // 防止 FOUC
-                link.onload = function() {
-                    link.onload = null;
-
-                    if(oldStyle.parentNode) {
-                        oldStyle.parentNode.removeChild(oldStyle);
-                    }
-                };
-            }
-
-            document.head.appendChild(link);
-        }
-        else {
-            link.href = url;
-        }
-    }
-
-    function injectJs(url, callback) {
-        var script = document.createElement('script');
-        script.onload = callback;
-        script.async = true;
-        script.src = url;
-
-        document.head.appendChild(script);
-    }
-
-    function setLessSourceMapEnable(enabled) {
-        detectorElem.setAttribute('data-sourcemap', enabled ? '1' : '0');
-        less.sourceMap = enabled;
-    }
-
-    function extractId(href) {
-        return href.replace(/^[a-z-]+:\/+?[^\/]+/, '' )  // Remove protocol & domain
-            .replace(/^\//,                 '' )  // Remove root /
-            .replace(/\.[a-zA-Z]+$/,        '' )  // Remove simple extension
-            .replace(/[^\.\w-]+/g,          '-')  // Replace illegal characters
-            .replace(/\./g,                 ':'); // Replace dots with colons(for valid id)
-    }
-
-    function base64Encode(str) {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
-
-
-    // 插件内消息处理
-    var msgHandlers = {
-        sourcemap_change: function(data) {
-            setLessSourceMapEnable(data.enabled);
-            less.refresh();
-        }
-    };
-
-    global.addEventListener('message', function(e) {
-        if(e.source !== global) {
-            return;
-        }
-
-        var data = e.data;
-        if(data && data.type && msgHandlers[data.type]) {
-            msgHandlers[data.type].call(this, data, e);
-        }
-    });
 })(this, document);

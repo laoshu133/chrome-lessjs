@@ -1,43 +1,39 @@
 /**
-* Chrome插件-Lessjs
+* Chrome-Lessjs
 * @author admin@laoshu133.com
-* @date   2014.07.26
+* @date   2014.11.06
 */
-;(function(){
-	var msgHandlers = {
-		page_init: function(data, tab, sendResponse) {
-			var tabId = tab.id;
 
-			chrome.pageAction[data.showIcon ? 'show' : 'hide'](tabId);
+;(function(global) {
+	var ds = global.ds;
+	var Messager = ds.Messager;
+
+	// tools
+	var tools = global.tools = {
+		getSourcemapStatus: function(callback, x) {
+			Messager.postToCurrentTab('get_sourcemap_status', function(e) {
+				callback(e.data);
+			});
 		},
-		devtools_open: function() {
-			/* sendMesaageToTab({
-	            type: 'sourcemap_change',
-	            enabled: true
-	        }); */
+		enableSourceMap: function() {
+			Messager.postToCurrentTab('sourcemap_enable');
 		},
-		devtools_close: function() {
-			// console.log('devtools_close');
+		disableSourceMap: function() {
+			Messager.postToCurrentTab('sourcemap_disable');
 		}
 	};
 
-	chrome.runtime.onMessage.addListener(function(data, sender, sendResponse) {
-		if(data && data.type && msgHandlers[data.type]) {
-			if(!sender.tab) {
-				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-					msgHandlers[data.type].call(this, data, tabs[0], sendResponse);
-				});
-				return;
-			}
-
-			msgHandlers[data.type].call(this, data, sender.tab, sendResponse);
-		}
+	// init
+	Messager.addListener('init', function(e) {
+		var fnName = e.data.showIcon ? 'show' : 'hide';
+		chrome.pageAction[fnName](e.tab.id);
 	});
 
-	// sendMesaageToTab
-    function sendMesaageToTab(data, callback) {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, data, callback);
-        });
-    }
-})();
+	// devtools
+	// Messager.addListener('devtools_open', function(e) {
+	// 	  tools.enableSourceMap();
+	// })
+	// .addListener('devtools_close', function(e) {
+	// 	  // tools.disableSourceMap();
+	// });
+})(this);

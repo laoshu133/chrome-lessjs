@@ -1,17 +1,15 @@
 /**
- * devtools 打开状态监测
+ * devtools
+ *
  */
 
-(function(global, document) {
-    // var detcetorId = 'chrome-lessjs-detector';
+(function(global) {
+    var ds = global.ds;
+    var Messager = ds.Messager;
 
-    chrome.runtime.sendMessage({
-        type: 'devtools_open'
-    });
+    Messager.postToBackground('devtools_open');
 
-    window.onbeforeunload = function() {
-        chrome.runtime.sendMessage({
-            type: 'devtools_close'
-        });
+    global.onbeforeunload = function() {
+        Messager.postToBackground('devtools_close');
     };
-})(this, document);
+})(this);

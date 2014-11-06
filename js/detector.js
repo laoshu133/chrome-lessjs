@@ -1,52 +1,58 @@
 /**
- * 当页面含有 lesscss 时插入 less-detector
+ * detector
+ * 根据需要注入 lessjs
  */
 
 (function(global, document) {
+    var ds = global.ds;
+    var Messager = ds.Messager;
     var detcetorId = 'chrome-lessjs-detector';
 
-    // 插件内消息处理
-    var msgHandlers = {
-        sourcemap_change: function(data) {
-            data.detcetorId = detcetorId;
-            global.postMessage(data, '*');
-        },
-        get_sourcemap_status: function(data, sender, callback) {
-            var detcetorElem = document.getElementById(detcetorId);
+    // sourcemap
+    Messager.addListener('get_sourcemap_status', function(e) {
+        var enabled = false;
+        var elem = document.getElementById(detcetorId);
 
-            var sourceMapEnabled = true;
-            if(detcetorElem && detcetorElem.getAttribute('data-sourcemap') === '0') {
-                sourceMapEnabled = false;
-            }
+        if(elem && elem.getAttribute('sourcemap') !== '0') {
+            enabled = true;
+        }
 
-            callback({
-                type: 'ret_sourcemap_status',
-                enabled: sourceMapEnabled
+        e.callback({
+            enabled: enabled
+        });
+    })
+    .addListener('sourcemap_enable', function(e) {
+        Messager.postToPage(e.type);
+    })
+    .addListener('sourcemap_disable', function(e) {
+        Messager.postToPage(e.type);
+    });
+
+    // xhr
+    Messager.addListener('get', function(e) {
+        ds.getByBackground(e.data, function(ev) {
+            e.callback({
+                statusCode: ev.statusCode,
+                status: ev.status,
+                data: ev.data
             });
-        }
-    };
-
-    chrome.runtime.onMessage.addListener(function(data) {
-        if(data && data.type && msgHandlers[data.type]) {
-            msgHandlers[data.type].apply(this, arguments);
-        }
+        });
     });
 
 
-    // less-detector
+    // lessjs-injecter
     var lessLinkSelector = 'link[rel="stylesheet/less"], link[type$="less"]';
     var links = document.querySelectorAll(lessLinkSelector);
 
     if(links.length > 0) {
-        injectLessDetect();
+        injectLessJs();
 
-        chrome.runtime.sendMessage({
-            type: 'page_init',
-            showIcon: !!links.length
+        Messager.postToBackground('init', {
+            showIcon: true
         });
     }
 
-    function injectLessDetect() {
+    function injectLessJs() {
         var script = document.createElement('script');
         script.src = chrome.extension.getURL('js/lessjs-injecter.js');
         script.id = detcetorId;
