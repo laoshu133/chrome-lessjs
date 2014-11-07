@@ -6,7 +6,7 @@
 2. 在 Chrome Developer Tools 中显示行号
 3. 支持开关 `source-map`
 4. 优化 less 请求，支持跨域，不占用页面 ajax 请求
-5. 支持修改文件自动刷新！
+5. 支持修改文件自动刷新，仅刷新 CSS，无需刷新整个页面！
 
 在 Chrome 下实现类似 FireLESS 功能，FireLESS 原简介：
 
