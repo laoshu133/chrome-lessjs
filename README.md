@@ -1,5 +1,7 @@
 # Lessjs for Google Chrome
 
+插件地址：[https://chrome.google.com/webstore/detail/ckibkhccigbdnonnpeakaocmpdleojda](https://chrome.google.com/webstore/detail/ckibkhccigbdnonnpeakaocmpdleojda)
+
 ## 功能简介
 
 1. 编译页面中 LessCSS
