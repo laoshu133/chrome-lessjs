@@ -160,8 +160,6 @@
         }
     });
 
-    // refresh
-
     // refresh & sourceMap toggle
     ds.Messager.addListener('refresh_less', function() {
         global.less.refresh();
