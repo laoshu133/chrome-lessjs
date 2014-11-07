@@ -203,7 +203,11 @@
 
             if(!link) {
                 inited = false;
+
                 link = document.createElement('link');
+                if(sheet.media) {
+                    link.media = sheet.media;
+                }
                 link.rel = 'stylesheet';
                 link.type = 'css/text';
                 link.id = id;
@@ -225,7 +229,10 @@
             }
 
             if(!inited) {
-                document.head.appendChild(link);
+                var nextElem = sheet.nextSibling;
+                sheet.parentNode.insertBefore(link, nextElem);
+
+                // document.head.appendChild(link);
             }
         };
 
