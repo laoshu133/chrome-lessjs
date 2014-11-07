@@ -28,8 +28,6 @@
 				};
 			}
 			tabData.windowId = tab.windowId;
-
-			chrome.pageAction.show(id);
 		},
 		removeTab: function(tabId) {
 			delete this.tabMaps[tabId];
@@ -37,6 +35,9 @@
 		activeTab: function(tab) {
 			var self = this;
 			var id = tab.id;
+
+			this.initTab(tab);
+
 			this.eachTab(function(tabData) {
 				if(id !== tabData.id && tab.windowId === tabData.windowId) {
 					self.inactiveTab(tabData.id);
@@ -125,6 +126,8 @@
 	// init
 	Messager.addListener('init', function(e) {
 		tools.initTab(e.tab);
+
+		chrome.pageAction.show(e.tab.id);
 	});
 
 	// tab onActivated, onUpdated, onRemoved
