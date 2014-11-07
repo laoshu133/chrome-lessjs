@@ -22,7 +22,7 @@
     // less loader & auto refresh
     (function() {
         var lessCache = {};
-        var delay = 1600;  // 缓存，轮询间隔时间
+        var delay = 1240;  // 缓存，轮询间隔时间
         var checkLimit = 5; // 单次检测最大个数
         var autoRefresh = false;
 
