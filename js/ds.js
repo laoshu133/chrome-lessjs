@@ -167,11 +167,11 @@
 
                 return this;
             },
-            postToTab: function(tab/*, type, data, callback */) {
+            postToTab: function(tabId/*, type, data, callback */) {
                 var args = slice.call(arguments, 1);
                 var evt = createPostEvent.apply(null, args);
 
-                var port = chrome.tabs.connect(tab.id, {
+                var port = chrome.tabs.connect(tabId, {
                     name: 'ds'
                 });
 
@@ -185,7 +185,7 @@
                 var args = slice.call(arguments);
 
                 ds.getCurrentTab(function(tab) {
-                    args.unshift(tab);
+                    args.unshift(tab.id);
                     self.postToTab.apply(self, args);
                 });
 
@@ -214,14 +214,20 @@
                     url: null,
                     data: null,
                     type: 'get',
+                    cache: true,
                     dataType: 'string',
                     success: this.noop,
                     error: this.noop
                 });
+                ops.type = ops.type.toUpperCase();
 
                 var xhr = new XMLHttpRequest();
-                xhr.open(ops.type.toUpperCase(), ops.url, true);
-                // xhr.setRequestHeader('Accept', 'text/x-less, text/css; q=0.9, */*; q=0.5');
+                xhr.open(ops.type, ops.url, true);
+
+                if(ops.type === 'GET' && !ops.cache) {
+                    xhr.setRequestHeader('Cache-Control', 'no-cache');
+                    xhr.setRequestHeader('Pragma', 'no-cache');
+                }
 
                 xhr.onload = function() {
                     var status = 'success';
@@ -306,6 +312,53 @@
 
         return tools;
     })());
+
+    // queue
+    ds.Queue = (function() {
+        function Queue(onComplete) {
+            this.tasks = [];
+            this.status = 'ready';
+            this.onComplete = onComplete || ds.noop;
+        }
+
+        ds.mix(Queue.prototype, {
+            add: function(task) {
+                this.tasks.push(task);
+            },
+            next: function() {
+                if(this.status !== 'ready') {
+                    return this;
+                }
+
+                var self = this;
+                var task = this.tasks.shift();
+                if(task) {
+                    this.status = 'runing';
+                    task(function() {
+                        if(self.status === 'runing') {
+                            self.status = 'ready';
+                            self.next();
+                        }
+                    });
+                }
+                else {
+                    this.status = 'complete';
+                    this.onComplete();
+                }
+
+                return this;
+            },
+            start: function() {
+                return this.next();
+            },
+            stop: function() {
+                this.status = 'stop';
+                this.onComplete();
+            }
+        });
+
+        return Queue;
+    })();
 
     // utils
     ds.mix({

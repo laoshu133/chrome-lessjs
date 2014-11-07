@@ -24,9 +24,16 @@
 
 5. 替换所有 `createCSS` 为 `less.createCSS`
 
-6. 挂载 less.doXHR ，并替换 doXHR 调用
+6. 挂载 `less.doXHR` ，并替换 doXHR 调用
 
-7. 修正 less.js 部分BUG
+7. 注释 `loadFile` 中缓存操作，转由插件内部管理
+
+    ```
+    // per file cache
+    // fileCache[href] = data;
+    ```
+
+8. 修正 less.js 部分BUG
 
     - `loadStyleSheet` 内 `loadFile` 回调中 `if(data)` 修改为 `if(data != null) `
 

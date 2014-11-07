@@ -139,9 +139,9 @@
             var Messager = ds.Messager;
             Messager.post.apply(Messager, arguments);
         },
-        // xhr
-        get: function(url, callback) {
-            ds.postMessage('get', url, function(e) {
+        // loader
+        getLess: function(url, callback) {
+            ds.postMessage('get_less', url, function(e) {
                 callback(e.data);
             });
         },
@@ -160,11 +160,21 @@
         }
     });
 
-    // sourceMap toggle
-    ds.Messager.addListener('sourcemap_enable', function(e) {
+    // refresh
+
+    // refresh & sourceMap toggle
+    ds.Messager.addListener('refresh_less', function() {
+        global.less.refresh();
+    })
+    .addListener('get_sourcemap_status', function(e) {
+        e.callback({
+            enabled: !!global.less.sourceMap
+        });
+    })
+    .addListener('sourcemap_enable', function() {
         global.less.toggleSourceMap(true);
     })
-    .addListener('sourcemap_disable', function(e) {
+    .addListener('sourcemap_disable', function() {
         global.less.toggleSourceMap(false);
     });
 
@@ -177,7 +187,7 @@
         var less = global.less;
 
         less.doXHR = function(url, type, callback, errback) {
-            ds.get(url, function(e) {
+            ds.getLess(url, function(e) {
                 if(e.status === 'success') {
                     callback(e.data);
                 }
@@ -238,9 +248,6 @@
 
         // sourceMap
         less.toggleSourceMap = function(enabled, notCache) {
-            var key = 'sourcemap';
-
-            detectorElem.setAttribute(key, enabled ? 1 : 0);
             less.sourceMap = !!enabled;
             less.refresh(notCache);
         };
