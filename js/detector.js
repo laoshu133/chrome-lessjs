@@ -33,6 +33,7 @@
         ds.getByBackground(e.data, function(ev) {
             e.callback({
                 statusCode: ev.statusCode,
+                headers: ev.headers,
                 status: ev.status,
                 data: ev.data
             });

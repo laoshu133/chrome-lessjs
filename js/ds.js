@@ -245,8 +245,6 @@
                         status = 'error';
                     }
 
-                    console.log(status, xhr);
-
                     if(status !== 'success') {
                         ops.error(status, xhr);
                     }
@@ -282,9 +280,18 @@
 
                 ds.ajax(ds.mix(ops, {
                     success: function(data, xhr) {
+                        var headers = {};
+                        var repHeaders = xhr.getAllResponseHeaders();
+                        repHeaders.split('\r\n').forEach(function(s) {
+                            var a = s.split(': ');
+                            if(a[0]) {
+                                headers[a[0]] = a[1];
+                            }
+                        });
                         e.callback(data, {
                             status: 'success',
-                            statusCode: xhr.status
+                            statusCode: xhr.status,
+                            headers: headers
                         });
                     },
                     error: function(status, xhr) {

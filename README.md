@@ -5,6 +5,7 @@
 1. 编译页面中 LessCSS
 2. 在 Chrome Developer Tools 中显示行号
 3. 支持开关 `source-map`
+4. 优化 less 请求，支持跨域，不占用页面 ajax 请求
 
 在 Chrome 下实现类似 FireLESS 功能，引入 FireLESS 原简介：
 
