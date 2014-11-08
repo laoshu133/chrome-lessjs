@@ -24,6 +24,7 @@
         var lessCache = {};
         var delay = 640;  // 缓存，轮询间隔时间
         var checkLimit = 5; // 单次检测最大个数
+        var cacheTimeout = 2400; // 文件缓存时间
         var autoRefresh = false;
 
         var lastInx = 0;
@@ -83,7 +84,7 @@
         function getLess(url, callback, notCached) {
             var now = +new Date();
             var cache = lessCache[url];
-            if(!notCached && cache && now - cache.timestamp < delay) {
+            if(!notCached && cache && now - cache.timestamp < cacheTimeout) {
                 callback(cache);
                 return;
             }
