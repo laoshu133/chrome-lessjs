@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"name": "Lessjs for Google Chrome",
 	"description": "A Lesscss compiler for Google Chrome, like FireLESS",
 	"icons": {
