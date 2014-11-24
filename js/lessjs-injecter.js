@@ -238,9 +238,12 @@
 
             if(!inited) {
                 var nextElem = sheet.nextSibling;
-                sheet.parentNode.insertBefore(link, nextElem);
-
-                // document.head.appendChild(link);
+                if(sheet.parentNode) {
+                    sheet.parentNode.insertBefore(link, nextElem);
+                }
+                else {
+                    document.head.appendChild(link);
+                }
             }
         };
 
