@@ -110,6 +110,9 @@
                 if(ev.status === 'success') {
                     lessCache[url] = ret;
                 }
+                else if(cache) {
+                    delete lessCache[url];
+                }
 
                 callback(ret);
             });
