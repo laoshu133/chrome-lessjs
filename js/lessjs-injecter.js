@@ -195,9 +195,10 @@
             });
         };
 
-        less.createCSS = function(content, sheet) {
+        var utils = less.require('./utils');
+        less.require('./browser').createCSS = function(document, content, sheet) {
             var href = sheet.href || '';
-            var id = 'less:' + (sheet.title || less.extractId(href));
+            var id = 'less:' + (sheet.title || utils.extractId(href));
 
             // use link replace style
             var oldStyle;
@@ -248,40 +249,19 @@
         };
 
         // sourceMap
-        less.toggleSourceMap = function(enabled, notCache) {
-            less.sourceMap = !!enabled;
-            less.refresh(notCache);
+        var Environment = less.require('./environment/environment');
+        Environment.prototype.encodeBase64 = ds.base64Encode;
+        Environment.prototype.getSourceMapGenerator = function() {
+            return global.sourceMap.SourceMapGenerator;
         };
 
-        less.sourceMapGenerator = global.sourceMap.SourceMapGenerator;
+        less.toggleSourceMap = function(enabled, notCache) {
+            var ops = less.options || less;
+            ops.sourceMap = !enabled ? false : {
+                sourceMapFileInline: true
+            };
 
-        // override less.tree
-        less.tree.sourceMapOutput.prototype.toCSS = function(env) {
-            this._sourceMapGenerator = new this._sourceMapGeneratorConstructor({
-                file: this._outputFilename,
-                sourceRoot: null
-            });
-
-            if (this._outputSourceFiles) {
-                for(var filename in this._contentsMap) {
-                    if (this._contentsMap.hasOwnProperty(filename)) {
-                        var source = this._contentsMap[filename];
-                        if (this._contentsIgnoredCharsMap[filename]) {
-                            source = source.slice(this._contentsIgnoredCharsMap[filename]);
-                        }
-                        this._sourceMapGenerator.setSourceContent(this.normalizeFilename(filename), source);
-                    }
-                }
-            }
-
-            this._rootNode.genCSS(env, this);
-
-            var sourceMapContent = JSON.stringify(this._sourceMapGenerator.toJSON());
-            var mapData = 'data:application/json;base64,' + ds.base64Encode(sourceMapContent);
-
-            this._css.push('/*# sourceMappingURL=' + mapData + ' */');
-
-            return this._css.join('');
+            less.refresh(notCache);
         };
 
         var notCache = less.env === 'development';

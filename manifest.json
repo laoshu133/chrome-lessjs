@@ -24,6 +24,6 @@
 		"run_at": "document_end",
 		"all_frames": true
 	}],
-	"web_accessible_resources": [ "js/lessjs-injecter.js", "lib/less.min.js" ],
+	"web_accessible_resources": [ "lib/source-map-0.1.39.js", "js/lessjs-injecter.js", "lib/less.min.js" ],
 	"devtools_page": "devtools.html"
 }
