@@ -165,8 +165,9 @@
         global.less.refresh();
     })
     .addListener('get_sourcemap_status', function(e) {
+        var ops = global.less.options;
         e.callback({
-            enabled: !!global.less.sourceMap
+            enabled: !!(ops && ops.sourceMap)
         });
     })
     .addListener('sourcemap_enable', function() {
@@ -183,8 +184,9 @@
 
     function overrideLess() {
         var less = global.less;
+        var sourceMap = global.sourceMap;
 
-        less.doXHR = function(url, type, callback, errback) {
+        less.FileManager.prototype.doXHR = function(url, type, callback, errback) {
             ds.getLess(url, function(e) {
                 if(e.status === 'success') {
                     callback(e.data);
@@ -252,7 +254,7 @@
         var Environment = less.require('./environment/environment');
         Environment.prototype.encodeBase64 = ds.base64Encode;
         Environment.prototype.getSourceMapGenerator = function() {
-            return global.sourceMap.SourceMapGenerator;
+            return sourceMap.SourceMapGenerator;
         };
 
         less.toggleSourceMap = function(enabled, notCache) {
