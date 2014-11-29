@@ -364,7 +364,13 @@
     ds.mix({
         getCurrentTab: function(callback) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                callback(tabs[0]);
+                // chrome bug, not throw error
+                try{
+                    callback(tabs[0]);
+                }
+                catch(ex) {
+                    console.error(ex);
+                }
             });
         }
     });
