@@ -23,6 +23,7 @@
 
 			if(!tabData) {
 				tabData = this.tabMaps[id] = {
+					devtools: false,
 					actived: false,
 					id: tab.id
 				};
@@ -50,9 +51,7 @@
 			}
 			tabData.actived = true;
 
-			if(this.autoRefreshEnabled) {
-				this.enableAutoRefresh(id);
-			}
+			this.enableAutoRefresh(id);
 		},
 		inactiveTab: function(tabId) {
 			var tabData = this.tabMaps[tabId];
@@ -68,10 +67,34 @@
 				return;
 			}
 
-			var tabData = this.tabMaps[tab.id];
-			if(tabData && tabData.actived) {
-				this.enableAutoRefresh(tab.id);
-			}
+			this.enableAutoRefresh(tab.id);
+		},
+		// devtools
+		enableDevtools: function() {
+			var self = this;
+
+			ds.getCurrentTab(function(tab) {
+				var tabData = self.tabMaps[tab.id];
+
+				if(tabData) {
+					tabData.devtools = true;
+
+					self.enableAutoRefresh(tab.id);
+				}
+			});
+		},
+		disableDevtools: function() {
+			var self = this;
+
+			ds.getCurrentTab(function(tab) {
+				var tabData = self.tabMaps[tab.id];
+
+				if(tabData) {
+					tabData.devtools = false;
+
+					// self.disableAutoRefresh(tab.id);
+				}
+			});
 		},
 		//autoRefresh
 		autoRefreshEnabled: true,
@@ -99,13 +122,18 @@
 			});
 		},
 		enableAutoRefresh: function(tabId) {
-			var type = 'enable_auto_refresh';
+			var tabData = this.tabMaps[tabId];
+			if(!tabData || !this.autoRefreshEnabled ||
+				!tabData.actived || !tabData.devtools
+			) {
+				return;
+			}
 
+			var type = 'enable_auto_refresh';
 			Messager.postToTab(tabId, type);
 		},
 		disableAutoRefresh: function(tabId) {
 			var type = 'disable_auto_refresh';
-
 			Messager.postToTab(tabId, type);
 		},
 		// sourceMap
@@ -142,13 +170,13 @@
 		tools.removeTab(tabId);
 	});
 
-
-
 	// devtools
-	// Messager.addListener('devtools_open', function(e) {
-	// 	  tools.enableSourceMap();
-	// })
-	// .addListener('devtools_close', function(e) {
-	// 	  // tools.disableSourceMap();
-	// });
+	Messager.addListener('devtools_open', function() {
+		tools.enableDevtools();
+	})
+	.addListener('devtools_close', function() {
+		tools.disableDevtools();
+	});
+
+
 })(this);
