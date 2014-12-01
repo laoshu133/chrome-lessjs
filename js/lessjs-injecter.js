@@ -162,7 +162,7 @@
 
     // options, refresh & sourceMap toggle
     ds.Messager.addListener('get_options', function(e) {
-        var keys = ['env', 'async', 'relativeUrls', 'globalVars', 'fileAsync', 'useFileCache', 'logLevel'];
+        var keys = ['env', 'async', 'relativeUrls', 'globalVars', 'fileAsync', 'logLevel', 'liveReload'];
 
         var options = {};
         var less = global.less;

@@ -61,7 +61,6 @@
         }
 
         var checker = new ds.RefreshChecker({
-            // port: 11112,
             autoStart: false,
             loader: getLess
         })
