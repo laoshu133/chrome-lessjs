@@ -313,53 +313,6 @@
         return tools;
     })());
 
-    // queue
-    ds.Queue = (function() {
-        function Queue(onComplete) {
-            this.tasks = [];
-            this.status = 'ready';
-            this.onComplete = onComplete || ds.noop;
-        }
-
-        ds.mix(Queue.prototype, {
-            add: function(task) {
-                this.tasks.push(task);
-            },
-            next: function() {
-                if(this.status !== 'ready') {
-                    return this;
-                }
-
-                var self = this;
-                var task = this.tasks.shift();
-                if(task) {
-                    this.status = 'runing';
-                    task(function() {
-                        if(self.status === 'runing') {
-                            self.status = 'ready';
-                            self.next();
-                        }
-                    });
-                }
-                else {
-                    this.status = 'complete';
-                    this.onComplete();
-                }
-
-                return this;
-            },
-            start: function() {
-                return this.next();
-            },
-            stop: function() {
-                this.status = 'stop';
-                this.onComplete();
-            }
-        });
-
-        return Queue;
-    })();
-
     // utils
     ds.mix({
         getCurrentTab: function(callback) {
