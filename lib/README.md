@@ -35,6 +35,16 @@
     // fileCache[href] = data;
     ```
 
+5. 添加 less.options 覆写支持
+
+    ```
+    var options = window.less || {};
+
+    // 添加 less.options 覆写支持
+    if(options.options) {
+        options = options.options;
+    }
+    ```
 
 
 ## sourceMap 添加包装代码
