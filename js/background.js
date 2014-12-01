@@ -124,7 +124,7 @@
 		enableAutoRefresh: function(tabId) {
 			var tabData = this.tabMaps[tabId];
 			if(!tabData || !this.autoRefreshEnabled ||
-				!tabData.actived || !tabData.devtools
+				!tabData.actived
 			) {
 				return;
 			}

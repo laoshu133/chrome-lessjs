@@ -22,65 +22,7 @@
     // less loader & auto refresh
     (function() {
         var lessCache = {};
-        var delay = 672;  // 缓存，轮询间隔时间
-        var checkLimit = 10; // 单次检测最大个数
-        var cacheTimeout = 2400; // 文件缓存时间
-        var autoRefresh = false;
-
-        var lastInx = 0;
-        var lastQueue, checkTimer;
-        function createCheckTask(ops) {
-            return function(next) {
-                if(lastQueue.status !== 'runing') {
-                    return;
-                }
-
-                getLess(ops.url, function(ret) {
-                    lastInx = ops.index;
-
-                    if(ret.data !== ops.cache.data) {
-                        // fire refresh
-                        Messager.postToPage('refresh_less');
-
-                        lastQueue.stop();
-                    }
-                    else {
-                        lastInx++;
-                        next();
-                    }
-                }, true);
-            };
-        }
-
-        function startCheckCache() {
-            var urls = Object.keys(lessCache);
-            var len = urls.length;
-
-            if(lastQueue) {
-                return;
-            }
-
-            lastQueue = new ds.Queue(function() {
-                if(lastInx >= len) {
-                    lastInx = 0;
-                }
-
-                if(autoRefresh) {
-                    checkTimer = setTimeout(startCheckCache, delay);
-                }
-                lastQueue = null;
-            });
-
-            for(var inx=lastInx; inx<len && inx-lastInx<checkLimit; inx++) {
-                lastQueue.add(createCheckTask({
-                    cache: lessCache[urls[inx]],
-                    url: urls[inx],
-                    index: inx,
-                }));
-            }
-
-            lastQueue.start();
-        }
+        var cacheTimeout = 2400;
 
         function getLess(url, callback, notCached) {
             var now = +new Date();
@@ -118,15 +60,37 @@
             });
         }
 
+        var checker = new ds.RefreshChecker({
+            port: 11112,
+            autoStart: false,
+            loader: getLess
+        })
+        .on('change', function(e) {
+            var changed = e.changed;
+            if(!changed || !changed.length) {
+                return;
+            }
+
+            changed.forEach(function(item) {
+                lessCache[item.url] = item.data;
+            });
+
+            // fire refresh
+            Messager.postToPage('refresh_less');
+        });
+
         // auto refresh
         Messager.addListener('enable_auto_refresh', function() {
-            autoRefresh = true;
-            clearTimeout(checkTimer);
-            checkTimer = setTimeout(startCheckCache, delay);
+            Messager.postToPage('get_options', function(e) {
+                var lessOptions = e.data;
+
+                checker.setOptions(lessOptions.liveReload);
+                checker.setItems(lessCache);
+                checker.start();
+            });
         });
         Messager.addListener('disable_auto_refresh', function() {
-            clearInterval(checkTimer);
-            autoRefresh = false;
+            checker.stop();
         });
 
         // loader

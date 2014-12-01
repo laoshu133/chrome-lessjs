@@ -2,16 +2,10 @@
     var WebSocket = global.WebSocket;
 
     function Connector(ops) {
+        this.listeners = {};
+
         this.url = 'ws://' + ops.host + ':' + ops.port + ops.uri;
-
         this.connect();
-
-
-
-        // var socket = this.socket;
-        // for(var k in socket) {
-        //     console.log('%s = %s', k, socket[k]);
-        // }
     }
 
     Connector.prototype = {
@@ -30,10 +24,25 @@
             var socket = this.socket = new WebSocket(this.url);
             String('open,close,message,error').replace(/\w+/g, function(a) {
                 socket['on' + a] = function(e) {
-                    console.log(a, e);
+                    var data = e.data;
+                    if(data) {
+                        e.originData = data;
+
+                        try {
+                            e.data = JSON.parse(data);
+                        }
+                        catch(_){}
+                    }
+
+                    console.log('socket evt:', a, e);
                     self.trigger(a, e);
                 };
             });
+        },
+        disconnect: function() {
+            if(this.isConnected()) {
+                this.socket.close();
+            }
         },
         send: function(data) {
             if(data && data.toJSON) {
@@ -48,7 +57,6 @@
         },
 
         // Events
-        listeners: {},
         on: function(type, callback) {
             var listeners = this.listeners;
             var handlers = listeners[type];
@@ -107,6 +115,5 @@
 
 
     window.conn = conn;
-    console.log(conn);
 
 })(window);

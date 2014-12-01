@@ -160,8 +160,20 @@
         }
     });
 
-    // refresh & sourceMap toggle
-    ds.Messager.addListener('refresh_less', function() {
+    // options, refresh & sourceMap toggle
+    ds.Messager.addListener('get_options', function(e) {
+        var keys = ['env', 'async', 'relativeUrls', 'globalVars', 'fileAsync', 'useFileCache', 'logLevel'];
+
+        var options = {};
+        var less = global.less;
+        var ops = less.options || less;
+        keys.forEach(function(k) {
+            options[k] = ops[k];
+        });
+
+        e.callback(options);
+    })
+    .addListener('refresh_less', function() {
         global.less.refresh();
     })
     .addListener('get_sourcemap_status', function(e) {
