@@ -61,7 +61,7 @@
         }
 
         var checker = new ds.RefreshChecker({
-            port: 11112,
+            // port: 11112,
             autoStart: false,
             loader: getLess
         })
@@ -70,10 +70,6 @@
             if(!changed || !changed.length) {
                 return;
             }
-
-            changed.forEach(function(item) {
-                lessCache[item.url] = item.data;
-            });
 
             // fire refresh
             Messager.postToPage('refresh_less');

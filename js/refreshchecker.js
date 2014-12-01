@@ -174,12 +174,32 @@
             this.checking = false;
         },
         fireChange: function(changed) {
-            if(!Array.isArray(changed)) {
+            if(!this.checking || !Array.isArray(changed)) {
                 return;
             }
 
             this.trigger('change', {
                 changed: changed
+            });
+        },
+        checkData: function(urls) {
+            var self = this;
+            var ops = this.options;
+
+            var c = 0;
+            var changed = [];
+            urls.forEach(function(url) {
+                var cache = self.items[url];
+
+                ops.loader(url, function(ret) {
+                    if(cache.data !== ret.data) {
+                        changed.push(url);
+                    }
+
+                    if(++c >= urls.length) {
+                        self.fireChange(changed);
+                    }
+                }, true);
             });
         },
         startSocketCheck: function() {
@@ -206,24 +226,16 @@
                     return;
                 }
 
-                var changed = [];
+                var urls = [];
                 var path = data.path;
                 var items = Object.keys(self.items);
                 items.forEach(function(url) {
                     if(url.indexOf(path) > -1) {
-                        changed.push({
-                            url: url
-                        });
+                        urls.push(url);
                     }
                 });
 
-                if(changed.length) {
-                    self.trigger('change', {
-                        changed: changed
-                    });
-                }
-
-                self.trigger(e);
+                self.checkData(urls);
             })
             .on('error', function(e) {
                 self.type = 'http';
@@ -285,12 +297,7 @@
                         self.lastCheckIndex = taskOps.index;
 
                         if(ret.data !== taskOps.cache.data) {
-                            if(self.checkQueue) {
-                                self.fireChange([{
-                                    url: taskOps.url,
-                                    data: ret
-                                }]);
-                            }
+                            self.fireChange([taskOps.url]);
 
                             queue.stop();
                         }
@@ -316,24 +323,3 @@
 
     ds.RefreshChecker = RefreshChecker;
 })(window);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
