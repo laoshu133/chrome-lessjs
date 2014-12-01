@@ -268,6 +268,6 @@
 
         var notCache = less.env === 'development';
         var sourceMapEnabled = less.sourceMap !== false;
-        less.toggleSourceMap(sourceMapEnabled, notCache);
+        //less.toggleSourceMap(sourceMapEnabled, notCache);
     }
 })(this, document);
