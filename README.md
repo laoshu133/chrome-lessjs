@@ -23,8 +23,8 @@
 ## 实现原理
 
 1. 引入 `source-map`
-2. 覆写 `less.tree.sourceMapOutput`，用于拦截原有 CSS 生成流程，同时追加 css map
-2. 设置 `less.sourceMap = less.sourceMap !== false` 让 lessjs 走 `source-map` 生成流程
+2. 覆写 `less.Environment.getSourceMapGenerator`，挂载 less sourceMap 生成函数
+2. 覆写 `less.require('./browser').createCSS` 覆写 CSS 写入流程，使用 link 标签代替 style 标签
 
 ## 已知问题
 
@@ -59,6 +59,6 @@
 
 `0.0.9` 自动刷新细节优化
 
-`0.1.0` 更新 less.js 至 `2.1.1`，更新 source-map 至 `0.1.40`；实现新API接入；优化自动刷新，仅当打开 devTools 时才启用；
+`0.1.0` 更新 less.js 至 `2.1.1`，更新 source-map 至 `0.1.40`；实现新API接入；优化自动刷新，仅当打开 devTools 时才启用
 
 
