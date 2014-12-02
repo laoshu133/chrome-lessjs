@@ -319,7 +319,7 @@
             return;
         }
 
-        var socketMap = {};
+        var socketCache = {};
         var Messager = ds.Messager;
         var WebSocket = global.WebSocket;
         var STATUS_OPEN = WebSocket.OPEN;
@@ -332,7 +332,12 @@
 
             var data = e.data;
             var socketId = ds.uuid();
-            var socket = socketMap[socketId] = new WebSocket(data.url);
+            var socket = new WebSocket(data.url);
+            var cache = socketCache[socketId] = {
+                id: socketId,
+                socket: socket,
+                tabId: tabId
+            };
 
             e.callback(null, {
                 socketId: socketId
@@ -349,7 +354,7 @@
                     }
 
                     if(type === 'close') {
-                        delete socketMap[socketId];
+                        delete socketCache[socketId];
                     }
 
                     Messager.postToTab(tabId, 'socket_event', {
@@ -362,7 +367,8 @@
         })
         .addListener('socket_send', function(e) {
             var data = e.data;
-            var socket = socketMap[data.socketId];
+            var cache = socketCache[data.socketId];
+            var socket = cache ? cache.socket : null;
 
             if(socket && socket.readyState === STATUS_OPEN) {
                 var postData = data.data;
@@ -375,12 +381,33 @@
         })
         .addListener('socket_close', function(e) {
             var data = e.data;
-            var socket = socketMap[data.socketId];
+            var cache = socketCache[data.socketId];
+            var socket = cache ? cache.socket : null;
 
             if(socket && socket.readyState === STATUS_OPEN) {
-                delete socketMap[data.socketId];
+                delete socketCache[data.socketId];
                 socket.close();
             }
+        });
+
+        function cleanCacheByTabId(tabId) {
+            Object.keys(socketCache).forEach(function(inx) {
+                var item = socketCache[inx];
+
+                if(item.tabId === tabId) {
+                    delete socketCache[item.id];
+                }
+            });
+        }
+
+        // clean by tab onUpdated, onRemoved
+        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+            if(info && info.status === 'loading') {
+                cleanCacheByTabId(tabId);
+            }
+        });
+        chrome.tabs.onRemoved.addListener(function(tabId) {
+           cleanCacheByTabId(tabId);
         });
     })();
 
