@@ -65,7 +65,7 @@
         this.listeners = {};
 
         this.url = 'ws://' + ops.host + ':' + ops.port + ops.uri;
-        this.initEvent();
+        // this.initEvent();
         this.connect();
     }
 
@@ -76,11 +76,12 @@
         initEvent: function() {
             var self = this;
 
-            Messager.addListener('socket_event', function(e) {
+            var evtType = 'socket_event_' + this.socketId;
+            Messager.addListener(evtType, function(e) {
                 var evt = e.data;
-                if(evt.socketId !== self.socketId) {
-                    return;
-                }
+                // if(evt.socketId !== self.socketId) {
+                //     return;
+                // }
 
                 if(/^(?:open|error|close)$/.test(evt.type)) {
                     self.status = evt.type;
@@ -100,6 +101,7 @@
                 url: this.url
             }, function(e) {
                 self.socketId = e.socketId;
+                self.initEvent();
             });
         },
         disconnect: function() {

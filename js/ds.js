@@ -357,7 +357,8 @@
                         delete socketCache[socketId];
                     }
 
-                    Messager.postToTab(tabId, 'socket_event', {
+                    var evtType = 'socket_event_' + socketId;
+                    Messager.postToTab(tabId, evtType, {
                         type: type,
                         data: data,
                         socketId: socketId
@@ -396,6 +397,7 @@
 
                 if(item.tabId === tabId) {
                     delete socketCache[item.id];
+                    item.socket.close();
                 }
             });
         }

@@ -178,5 +178,4 @@
 		tools.disableDevtools();
 	});
 
-
 })(this);
