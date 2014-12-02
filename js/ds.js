@@ -313,6 +313,77 @@
         return tools;
     })());
 
+    // socket
+    (function() {
+        if(!chrome.tabs) {
+            return;
+        }
+
+        var socketMap = {};
+        var Messager = ds.Messager;
+        var WebSocket = global.WebSocket;
+        var STATUS_OPEN = WebSocket.OPEN;
+
+        Messager.addListener('socket_create', function(e) {
+            var tabId = e.tab ? e.tab.id : 0;
+            if(!tabId) {
+                return;
+            }
+
+            var data = e.data;
+            var socketId = ds.uuid();
+            var socket = socketMap[socketId] = new WebSocket(data.url);
+
+            e.callback(null, {
+                socketId: socketId
+            });
+
+            String('open,close,message,error').replace(/\w+/g, function(type) {
+                socket['on' + type] = function(e) {
+                    var data = e.data;
+                    if(data) {
+                        try {
+                            data = JSON.parse(data);
+                        }
+                        catch(_){}
+                    }
+
+                    if(type === 'close') {
+                        delete socketMap[socketId];
+                    }
+
+                    Messager.postToTab(tabId, 'socket_event', {
+                        type: type,
+                        data: data,
+                        socketId: socketId
+                    });
+                };
+            });
+        })
+        .addListener('socket_send', function(e) {
+            var data = e.data;
+            var socket = socketMap[data.socketId];
+
+            if(socket && socket.readyState === STATUS_OPEN) {
+                var postData = data.data;
+                if(typeof postData === 'object') {
+                    postData = JSON.stringify(postData);
+                }
+
+                socket.send(postData);
+            }
+        })
+        .addListener('socket_close', function(e) {
+            var data = e.data;
+            var socket = socketMap[data.socketId];
+
+            if(socket && socket.readyState === STATUS_OPEN) {
+                delete socketMap[data.socketId];
+                socket.close();
+            }
+        });
+    })();
+
     // utils
     ds.mix({
         getCurrentTab: function(callback) {

@@ -59,20 +59,35 @@
 
 ;(function(global) {
     var ds = global.ds;
-    var WebSocket = global.WebSocket;
+    var Messager = ds.Messager;
 
     function Connector(ops) {
         this.listeners = {};
 
         this.url = 'ws://' + ops.host + ':' + ops.port + ops.uri;
+        this.initEvent();
         this.connect();
     }
 
     Connector.prototype = {
         constructor: Connector,
-        isConnected: function() {
-            var socket = this.socket;
-            return socket && socket.readyState === WebSocket.OPEN;
+        socketId: 0,
+        status: 'init',
+        initEvent: function() {
+            var self = this;
+
+            Messager.addListener('socket_event', function(e) {
+                var evt = e.data;
+                if(evt.socketId !== self.socketId) {
+                    return;
+                }
+
+                if(/^(?:open|error|close)$/.test(evt.type)) {
+                    self.status = evt.type;
+                }
+
+                self.trigger(evt);
+            });
         },
         connect: function() {
             var self = this;
@@ -81,37 +96,29 @@
                 return;
             }
 
-            var socket = this.socket = new WebSocket(this.url);
-            String('open,close,message,error').replace(/\w+/g, function(a) {
-                socket['on' + a] = function(e) {
-                    var data = e.data;
-                    if(data) {
-                        try {
-                            e.JSON = JSON.parse(data);
-                        }
-                        catch(_){}
-                    }
-
-                    // console.log('Socket Evt: ', a, e);
-                    self.trigger(e);
-                };
+            Messager.postToBackground('socket_create', {
+                url: this.url
+            }, function(e) {
+                self.socketId = e.socketId;
             });
         },
         disconnect: function() {
             if(this.isConnected()) {
-                this.socket.close();
+                Messager.postToBackground('socket_close', {
+                    socketId: this.socketId
+                });
             }
         },
         send: function(data) {
-            if(data && data.toJSON) {
-                data = data.toJSON();
+            if(this.isConnected()) {
+                Messager.postToBackground('socket_send', {
+                    socketId: this.socketId,
+                    data: data
+                });
             }
-
-            if(typeof data === 'object') {
-                data = JSON.stringify(data);
-            }
-
-            this.socket.send(data);
+        },
+        isConnected: function() {
+            return this.socketId && this.status === 'open';
         },
 
         // Events
@@ -275,7 +282,7 @@
                 });
             })
             .on('message', function(e) {
-                var data = e.JSON;
+                var data = e.data;
                 if(!data || data.command !== 'reload') {
                     return;
                 }
