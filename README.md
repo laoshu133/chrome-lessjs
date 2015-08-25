@@ -84,4 +84,5 @@ var less = {
 
 `0.1.3` 实现 LiveReload 自动刷新
 
+`0.1.4` URL bug fix；更新 less.js 至 `2.5.1`，更新 source-map 至 `0.4.4`；
 
