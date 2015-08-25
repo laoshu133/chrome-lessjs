@@ -157,6 +157,43 @@
             script.src = url;
 
             document.head.appendChild(script);
+        },
+        // css link url
+        processLinkUrl: function(content, location) {
+            var host = location.host;
+            var baseUrl = location.href;
+            var protocol = location.protocol;
+
+            baseUrl = baseUrl.slice(0, baseUrl.lastIndexOf('/') + 1);
+
+
+            var siteUrl = baseUrl.slice(0, baseUrl.indexOf(host) + host.length + 1);
+
+            var rAbsUrl = /^\w+:/;
+            content = content.replace(/\burl\(["']?([^\)]+?)["']?\)/ig, function(a, b) {
+                var url = b;
+
+                if(rAbsUrl.test(url)) {
+                    return a;
+                }
+
+                if('//' === url.slice(0, 2)) {
+                    url = protocol + url;
+                }
+                else if('/' === url.slice(0, 1)) {
+                    url = siteUrl.slice(0, -1) + url;
+                }
+                else {
+                    url = baseUrl + url.replace(/^\.\//, '');
+                }
+
+                return a.replace(b, url);
+            });
+
+            var url = 'data:text/css;charset=utf-8;base64,';
+            url += ds.base64Encode(content);
+
+            return url;
         }
     });
 
@@ -236,8 +273,9 @@
                 link.id = id;
             }
 
-            var url = 'data:text/css;charset=utf-8;base64,';
-            url += ds.base64Encode(content);
+            var location = document.location;
+            var url = ds.processLinkUrl(content, location);
+
             link.href = url;
 
             if(oldStyle) {
