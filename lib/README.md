@@ -14,7 +14,16 @@
     // less.refresh(less.env === 'development');
     ```
 
-3. 添加 less.require 实现 less 内部注入
+3. 取消自带 watch
+
+    ```
+    // 取消自带 watch
+    // if (/!watch/.test(window.location.hash)) {
+    //     less.watch();
+    // }
+    ```
+
+4. 添加 less.require 实现 less 内部注入
 
     ```
     // add less.require for chrome-lessjs
@@ -28,14 +37,14 @@
     };
     ```
 
-4. 取消 `loadFile` 中缓存操作，转由插件内部管理
+5. 取消 `loadFile` 中缓存操作，转由插件内部管理
 
     ```
     // per file cache
     // fileCache[href] = data;
     ```
 
-5. 添加 less.options 覆写支持
+6. 添加 less.options 覆写支持
 
     ```
     var options = window.less || {};
