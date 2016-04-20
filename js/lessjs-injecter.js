@@ -269,7 +269,7 @@
                     link.media = sheet.media;
                 }
                 link.rel = 'stylesheet';
-                link.type = 'css/text';
+                link.type = 'text/css';
                 link.id = id;
             }
 
