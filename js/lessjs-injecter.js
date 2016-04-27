@@ -141,6 +141,17 @@
         },
         // loader
         getLess: function(url, callback) {
+            if(!/^https?:\/\//i.test(url)) {
+                var baseUrl = location.origin;
+
+                if(url.slice(0, 1) === '/') {
+                    url = baseUrl + url;
+                }
+                else {
+                    url = baseUrl + location.pathname + url;
+                }
+            }
+
             ds.postMessage('get_less', url, function(e) {
                 callback(e.data);
             });
