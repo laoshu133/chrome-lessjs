@@ -141,7 +141,11 @@
         },
         // loader
         getLess: function(url, callback) {
-            if(!/^https?:\/\//i.test(url)) {
+            if(/^\/\//.test(url)) {
+                url = location.protocol + url;
+            }
+
+            if(!/^\w?:\/\//i.test(url)) {
                 var baseUrl = location.origin;
 
                 if(url.slice(0, 1) === '/') {
