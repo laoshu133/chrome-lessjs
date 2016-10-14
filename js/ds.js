@@ -185,6 +185,10 @@
                 var args = slice.call(arguments);
 
                 ds.getCurrentTab(function(tab) {
+                    if(!tab) {
+                        return;
+                    }
+
                     args.unshift(tab.id);
                     self.postToTab.apply(self, args);
                 });
@@ -420,7 +424,7 @@
                 active: true,
                 currentWindow: true
             }, function(tabs) {
-                callback(tabs[0]);
+                callback(tabs[0] || null);
             });
         }
     });
