@@ -74,6 +74,10 @@
 			var self = this;
 
 			ds.getCurrentTab(function(tab) {
+				if(!tab) {
+				    return;
+				}
+
 				var tabData = self.tabMaps[tab.id];
 
 				if(tabData) {
@@ -87,6 +91,10 @@
 			var self = this;
 
 			ds.getCurrentTab(function(tab) {
+				if(!tab) {
+				    return;
+				}
+
 				var tabData = self.tabMaps[tab.id];
 
 				if(tabData) {
@@ -123,8 +131,11 @@
 		},
 		enableAutoRefresh: function(tabId) {
 			var tabData = this.tabMaps[tabId];
-			if(!tabData || !this.autoRefreshEnabled ||
-				!tabData.actived || !tabData.devtools
+			if(
+				!tabData ||
+				!tabData.actived ||
+				// !tabData.devtools ||
+				!this.autoRefreshEnabled
 			) {
 				return;
 			}
