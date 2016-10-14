@@ -63,7 +63,7 @@
 			this.disableAutoRefresh(tabId);
 		},
 		updateTab: function(tab, info) {
-			if(!this.autoRefreshEnabled || info.status !== 'complete') {
+			if(info.status !== 'complete') {
 				return;
 			}
 
