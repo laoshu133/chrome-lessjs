@@ -190,7 +190,7 @@
                 type: 'auto',
                 autoStart: true,
                 // socket
-                host: location.host || 'localhost',
+                host: location.hostname || 'localhost',
                 uri: '/livereload',
                 port: 35729,
                 // http
